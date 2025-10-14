@@ -11,7 +11,10 @@
       "name": "vantagepoint-tools",
       "description": "Comprehensive toolkit for Vantagepoint UI configuration, including screen designer, rollback generator, and configuration validator",
       "version": "1.0.0",
-      "author": "Vantagepoint Developer",
+      "author": {
+        "name": "Vantagepoint Developer",
+        "email": "developer@vantagepoint.com"
+      },
       "source": "./vantagepoint-tools"
     }
   ]
