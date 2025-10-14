@@ -1,0 +1,18 @@
+{
+  "name": "vantagepoint-marketplace",
+  "description": "Professional tools and agents for Vantagepoint development and UI configuration",
+  "version": "1.0.0",
+  "owner": {
+    "name": "Vantagepoint Developer",
+    "email": "developer@vantagepoint.com"
+  },
+  "plugins": [
+    {
+      "name": "vantagepoint-tools",
+      "description": "Comprehensive toolkit for Vantagepoint UI configuration, including screen designer, rollback generator, and configuration validator",
+      "version": "1.0.0",
+      "author": "Vantagepoint Developer",
+      "source": "./vantagepoint-tools"
+    }
+  ]
+}
