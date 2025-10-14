@@ -28,7 +28,8 @@ A comprehensive toolkit containing four specialized agents for Vantagepoint UI c
 
 ```
 /
-├── marketplace.json                    # Marketplace manifest
+├── .claude-plugin/
+│   └── marketplace.json               # Marketplace manifest
 ├── vantagepoint-tools/                # Plugin package
 │   ├── .claude-plugin/
 │   │   └── plugin.json                # Plugin configuration
@@ -116,7 +117,7 @@ Streamlines Vantagepoint UI configuration with intelligent agents that prevent c
 
 ```bash
 # Install from local marketplace
-/plugin install your-plugin@./marketplace.json
+/plugin install vantagepoint-tools@./.claude-plugin/marketplace.json
 ```
 
 ## Best Practices
@@ -182,7 +183,7 @@ git clone https://github.com/owner/vantagepoint-marketplace.git
 git checkout -b feature/your-feature
 
 # Make changes and test locally
-/plugin install your-plugin@./marketplace.json
+/plugin install vantagepoint-tools@./.claude-plugin/marketplace.json
 
 # Submit pull request
 ```
