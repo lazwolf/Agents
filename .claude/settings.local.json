@@ -3,7 +3,11 @@
     "allow": [
       "Bash(python3:*)",
       "Bash(/dev/null)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Read(//c/Users/AlecJames/.claude/agents/**)",
+      "Bash(tree:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
