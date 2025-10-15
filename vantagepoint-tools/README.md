@@ -1,168 +1,187 @@
 # Vantagepoint Tools Plugin
 
-A comprehensive Claude Code plugin providing specialized agents for Vantagepoint UI configuration, database management, and workflow automation.
+A comprehensive Claude Code plugin providing production-ready SQL script generation for Vantagepoint UI configuration, database management, and workflow automation.
 
 ## Overview
 
-This plugin provides four specialized agents that work together to streamline Vantagepoint development:
+This plugin provides four specialized agents that work together to generate syntactically correct SQL scripts while understanding Vantagepoint's complex table relationships and avoiding common configuration pitfalls:
 
-- **Screen Designer**: Generates SQL scripts for UI configuration
-- **Rollback**: Creates safe rollback scripts for changes
-- **Validator**: Validates configurations and identifies issues
-- **Workflow Coordinator**: Orchestrates multi-step operations
+- **Screen Designer**: Generates complete SQL script packages (01-11 numbered scripts) for UI configuration
+- **Rollback**: Creates safe rollback scripts with dependency checking and backup table creation
+- **Validator**: Validates configurations, identifies missing components, and verifies permissions
+- **Workflow Coordinator**: Orchestrates multi-agent workflows for complex operations
 
-## Installation
+## How to Use
 
-### Via Marketplace
+These agents are invoked through Claude Code, not as direct CLI commands. Simply describe what you want to accomplish, and Claude will use the appropriate agent.
 
-```bash
-# Add the marketplace
-/plugin marketplace add owner/vantagepoint-marketplace
+### Agent Invocation
 
-# Install the plugin
-/plugin install vantagepoint-tools@vantagepoint-marketplace
-```
+**Instead of typing commands**, you ask Claude in natural language:
+- "Add a CustomerType field to the Invoice screen"
+- "Validate the Projects hub configuration"
+- "Create a rollback script for recent changes"
+- "Create a new UDIC entity for project tracking"
 
-### Direct Installation
-
-```bash
-/plugin install owner/repo
-```
+Claude will then invoke the appropriate agent(s) to complete your task.
 
 ## Available Agents
 
 ### 1. Screen Designer Agent (`screen-designer`)
 
-Generates SQL scripts for Vantagepoint UI configuration with expertise in avoiding common pitfalls.
+Generates complete SQL script packages for Vantagepoint UI configuration, following Vantagepoint naming conventions and best practices.
 
 **Usage:**
-```bash
-/task screen-designer "Add a custom field called 'CustomerType' to the Invoice screen"
+```
+Ask Claude: "Add a custom field called 'CustomerType' to the Invoice screen"
 ```
 
-**Capabilities:**
-- Custom field creation with proper GUID generation
-- UDIC entity management
-- Screen layout modifications
-- TabID mismatch prevention
-- SEField entry management
+**Script Generation Capabilities:**
+- **01_Create.sql**: Table DDL with proper structure (UDIC_UID as primary key)
+- **02_Registration.sql**: UDIC registration in FW_UDICData, FW_UDICLocalized, FW_CFGLabelData
+- **03_Triggers.sql**: Three audit triggers per table (Insert/Update/Delete)
+- **04_Fields.sql**: Field definitions in FW_CustomColumnsData with proper TabID
+- **05_Captions.sql**: Captions in FW_CustomColumnCaptions and CFGScreenDesignerLabels
+- **06_ScreenLayout.sql**: Screen positioning in CFGScreenDesignerData (27 columns)
+- **07_Security.sql**: SEInfoCenter and SEField entries for all roles
+- **08_SampleData.sql**: Test data for development
+- **09_Verify.sql**: Validation queries
+- **10_Workflow.sql**: Optional workflow configuration
+- **11_DefaultData.sql**: Production reference data
+- **99_Rollback.sql**: Complete cleanup script
 
 **Key Features:**
-- Automatically generates GUIDs without hyphens
-- Validates TabID consistency
-- Creates comprehensive scripts with validation
+- Generates GUIDs without hyphens: `REPLACE(CAST(NEWID() AS VARCHAR(36)), '-', '')`
+- Validates TabID consistency across tables
+- Handles dropdown fields with FW_CustomColumnValuesData
+- Supports custom grids with FW_CustomGridsData registration
+- Wraps DML in proper auditing context
+- Uses INSERT WHERE NOT EXISTS pattern for upgrade safety
 
 ### 2. Rollback Agent (`rollback`)
 
-Generates safe rollback scripts to undo UI changes.
+Generates safe rollback scripts that properly handle dependencies and preserve data integrity.
 
 **Usage:**
-```bash
-/task rollback "Generate rollback script for the CustomerType field addition"
+```
+Ask Claude: "Generate rollback script for the CustomerType field addition"
 ```
 
 **Capabilities:**
-- Safe field removal with dependency checking
-- UDIC entity cleanup
-- Configuration restoration
-- Backup data generation
+- **Dependency Analysis**: Checks for field usage before deletion
+- **Backup Table Creation**: Creates _Backup tables before data removal
+- **Proper Deletion Order**: Child records before parent (workflow cleanup first)
+- **Configuration Cleanup**: Removes from all 6 required component tables
+- **Audit Trail Preservation**: Maintains audit history during rollback
+- **Dry-Run Mode**: Preview rollback operations without execution
 
-**Key Features:**
-- Checks for dependencies before deletion
-- Creates backup tables
-- Preserves audit trails
+**Safety Features:**
+- IF EXISTS checks for all deletions
+- Transaction wrapping with error handling
+- Warnings about potential data loss
+- Verification queries before rollback
+- Conservative approach when MCP unavailable
 
 ### 3. Validator Agent (`validator`)
 
-Validates Vantagepoint UI configurations and identifies missing components.
+Comprehensive validation of Vantagepoint UI configurations with detailed reporting.
 
 **Usage:**
-```bash
-/task validator "Check if the CustomerType field is properly configured"
+```
+Ask Claude: "Check if the CustomerType field is properly configured"
+Or: "dry-run: Show validation plan for UDIC_ProjectDashboard"
 ```
 
-**Capabilities:**
-- Configuration completeness verification
-- Missing component identification
-- Permission validation
-- Cross-table consistency checks
+**Validation Checks:**
+- **6-Component Verification**: Physical column, FW_CustomColumnsData, Caption, ScreenLayout, Label, SEField
+- **GUID Format**: Ensures no hyphens in GUIDs
+- **TabID Consistency**: Verifies alignment across configuration tables
+- **Permission Validation**: Checks SEField and SEInfoCenter for all required roles
+- **Grid Registration**: Verifies FW_CustomGridsData entries for custom grids
+- **Dropdown Configuration**: Validates FW_CustomColumnValuesData for LimitToList fields
+- **Workflow Integrity**: Checks event/condition/action relationships
 
-**Key Features:**
-- Comprehensive validation reports
-- Error resolution recommendations
-- Performance impact assessment
+**Reporting Features:**
+- Component status checklist with ✓/✗ indicators
+- Critical issues highlighted
+- Resolution recommendations
+- SQL fix scripts generated
+- Dry-run mode for validation planning
 
 ### 4. Workflow Coordinator Agent (`workflow-coordinator`)
 
-Orchestrates complex multi-step UI configuration workflows.
+Orchestrates complex multi-step UI configuration workflows using predefined patterns.
 
 **Usage:**
-```bash
-/task workflow-coordinator "Add multiple custom fields to Invoice screen with full validation"
+```
+Ask Claude: "Add multiple custom fields to Invoice screen with full validation"
 ```
 
-**Capabilities:**
-- Multi-agent coordination
-- Sequential operation management
-- Error recovery
-- State management
+**Workflow Patterns:**
+- **Standard Field Addition**: Validate → Check Exists → Generate → Rollback → Package
+- **Bulk Field Operations**: Parallel validation → Bulk script generation → Transaction planning
+- **UDIC Entity Creation**: Name validation → Table creation → Registration → Field setup → Security
+- **Complex Grid Setup**: Parent entity → Grid table → Registration → Field configuration → UI placement
 
-**Key Features:**
-- Automated workflow execution
-- Progress tracking
-- Checkpoint system
-- Automatic rollback on failure
+**Orchestration Features:**
+- **Multi-Agent Coordination**: Sequences validator, designer, and rollback agents
+- **State Management**: Maintains context across operations
+- **Error Recovery**: Automatic retry with exponential backoff
+- **Checkpoint System**: Resume from last successful step
+- **Deployment Package**: Creates numbered script packages ready for execution
+- **Parallel Processing**: Runs independent validations concurrently
+- **Transaction Planning**: Groups related operations for atomic execution
 
 ## Common Workflows
 
 ### Adding a Custom Field
 
 1. **Simple Addition:**
-   ```bash
-   /task screen-designer "Add 'Priority' field to Project screen"
+   ```
+   Ask Claude: "Add 'Priority' field to Project screen"
    ```
 
 2. **With Validation:**
-   ```bash
-   /task workflow-coordinator "Add 'Priority' field with validation and rollback generation"
+   ```
+   Ask Claude: "Add 'Priority' field with validation and rollback generation"
    ```
 
 ### Creating UDIC Entity
 
-```bash
-/task screen-designer "Create UDIC entity for CustomerExtensions with fields: Type, Category, Region"
+```
+Ask Claude: "Create UDIC entity for CustomerExtensions with fields: Type, Category, Region"
 ```
 
 ### Validating Configuration
 
-```bash
-/task validator "Validate all custom fields on Invoice screen"
+```
+Ask Claude: "Validate all custom fields on Invoice screen"
 ```
 
 ### Emergency Rollback
 
-```bash
-/task rollback "Generate and execute rollback for today's Invoice screen changes"
+```
+Ask Claude: "Generate and execute rollback for today's Invoice screen changes"
 ```
 
 ## Best Practices
 
 ### 1. Always Validate First
 Before making changes, run validation to check current state:
-```bash
-/task validator "Check Invoice screen configuration"
+```
+Ask Claude: "Check Invoice screen configuration"
 ```
 
 ### 2. Use Workflow Coordinator for Complex Operations
 For multi-step operations, use the coordinator:
-```bash
-/task workflow-coordinator "Complete Invoice screen customization with 5 new fields"
+```
+Ask Claude: "Complete Invoice screen customization with 5 new fields"
 ```
 
 ### 3. Generate Rollback Scripts
 Always generate rollback scripts after changes:
-```bash
-/task rollback "Generate rollback for all changes made today"
+```
+Ask Claude: "Generate rollback for all changes made today"
 ```
 
 ### 4. Test in Non-Production
@@ -171,38 +190,123 @@ Test all scripts in development environment first.
 ## Configuration Requirements
 
 ### Database Access
-Agents require access to Vantagepoint database tables:
-- FW_CustomColumnsData
-- SEFields
-- UDICEntity
-- FW_TabConfig
+Agents require access to Vantagepoint MS SQL Server database with specific tables:
 
-### MCP Tools
-The following MCP tools should be available:
+#### Core Configuration Tables
+- **FW_CustomColumnsData** (25 columns, TabID at position 5)
+- **CFGScreenDesignerData** (27 columns, TabID at position 2)
+- **CFGScreenDesignerLabels** (7 columns, no TabID)
+- **FW_CustomColumnCaptions** (5 columns)
+- **FW_CustomColumnValuesData** (11 columns - actual table, NOT the view)
+- **FW_CustomColumns** (27 columns, PropertyBag support)
+
+#### UDIC Management Tables
+- **FW_UDICData** (9 columns - registration table)
+- **FW_UDICLocalized** (3 columns - localization)
+- **FW_CFGLabelData** (7 columns, all NOT NULL)
+- **FW_InfoCenterTabsData** (9 columns - tab configuration)
+- **FW_InfoCenterTabHeadings** (5 columns - tab labels)
+- **FW_CustomGridsData** (9 columns - grid registration)
+- **FW_CustomGridCaptions** (4 columns - grid labels)
+
+#### Security Tables
+- **SEInfoCenter** (11 columns - hub security)
+- **SEField** (11 columns - field security, REQUIRED for access)
+- **SE** (role definitions)
+
+#### Workflow Tables (Optional)
+- **WorkflowEvents** (10 columns)
+- **WorkflowConditions** (10 columns, ID links to EventID)
+- **WorkflowActions** (9 columns)
+- **WorkflowActionColumnUpdate** (10 columns, uses NewValue not UpdateValue)
+- **WorkflowActionSproc** (4 columns)
+
+### MCP MSSQL Server Setup
+Configure the MCP MSSQL server connection:
+
+```bash
+claude mcp add -s local MSSQL node "C:\GIT\Microsoft\SQL-AI-samples\MssqlMcp\Node\dist\index.js" \
+  -e SERVER_NAME=your_server \
+  -e DATABASE_NAME=your_database \
+  -e READONLY=false \
+  -e TRUST_SERVER_CERTIFICATE=true \
+  -e ENCRYPT=true \
+  -e AUTHENTICATION=sql \
+  -e USERNAME=your_username \
+  -e PASSWORD=your_password
+```
+
+Required MCP tools:
 - mcp__MSSQL__describe_table
 - mcp__MSSQL__read_data
+- mcp__MSSQL__list_table
 - mcp__MSSQL__insert_data
 - mcp__MSSQL__update_data
+- mcp__MSSQL__create_table
+- mcp__MSSQL__create_index
+- mcp__MSSQL__drop_table
 
-## Important Notes
+## Important Technical Notes
 
 ### GUID Generation
-Always use this format for GUIDs in Vantagepoint:
+Always generate GUIDs without hyphens:
 ```sql
 REPLACE(CAST(NEWID() AS VARCHAR(36)), '-', '')
 ```
 
-### TabID Consistency
-Ensure TabIDs match across:
-- FW_CustomColumnsData
-- FW_TabConfig
-- Related configuration tables
+### Table Name Constraints
+- **Maximum Length**: 32 characters (FW_UDICData.UDIC_ID is VARCHAR(32))
+- **UDIC Pattern**: UDIC_EntityName (entity < 27 chars)
+- **Grid Pattern**: UDIC_HubName_GridName (total ≤32 chars)
 
-### Permission Management
-All custom fields require:
-- SEField entry
-- Permission configuration
-- Role assignments
+### TabID Requirements
+Tables WITH TabID:
+- FW_CustomColumnsData (position 5)
+- CFGScreenDesignerData (position 2)
+- FW_InfoCenterTabsData
+
+Tables WITHOUT TabID:
+- CFGScreenDesignerLabels
+- FW_CustomColumnCaptions
+- SEField
+- SEInfoCenter
+
+### Field Configuration Requirements
+Every custom field requires 6 components:
+1. Physical column in table
+2. FW_CustomColumnsData entry (field definition)
+3. FW_CustomColumnCaptions entry (display caption)
+4. CFGScreenDesignerData entry (screen positioning)
+5. CFGScreenDesignerLabels entry (field label)
+6. SEField entry (security - REQUIRED for access)
+
+### Dropdown Field Configuration
+Fields with predefined values:
+- Set DataType='dropdown' (NOT 'string')
+- Set LimitToList='Y'
+- Add values to FW_CustomColumnValuesData (NOT the view)
+- Include UICultureName, DataValue, and Seq columns
+
+### Grid Configuration
+Custom grids require:
+- Grid table with composite key (UDIC_UID, Seq)
+- FW_CustomGridsData registration entry
+- FW_CustomGridCaptions for display name
+- Individual CFGScreenDesignerData entries for each grid field
+- Grid component entry with ComponentType='component_grid'
+
+### Security Configuration
+- Grant access to all roles with AccessAllNavNodes='Y' or Role='DEFAULT'
+- Use INSERT WHERE NOT EXISTS pattern to avoid duplicates
+- System fields in SEField must have appropriate ReadOnly settings
+- Dividers have NULL for Tablename and ColumnName
+
+### Auditing Requirements
+- DML scripts require auditing wrapper
+- DDL scripts (CREATE TABLE, triggers) do NOT use auditing wrapper
+- Insert triggers audit PRIMARY KEY only
+- Update triggers audit ALL fields with IF UPDATE() checks
+- Delete triggers audit the primary key
 
 ## Troubleshooting
 
@@ -224,29 +328,29 @@ All custom fields require:
 ## Examples
 
 ### Complete Field Addition Workflow
-```bash
+```
 # 1. Validate current state
-/task validator "Check Project screen configuration"
+Ask Claude: "Check Project screen configuration"
 
 # 2. Add field with workflow coordinator
-/task workflow-coordinator "Add Priority field to Project screen"
+Ask Claude: "Add Priority field to Project screen using workflow coordinator"
 
-# 3. The coordinator will:
-#    - Pre-validate
+# 3. Claude will orchestrate the workflow to:
+#    - Pre-validate configuration
 #    - Generate scripts
 #    - Execute changes
-#    - Post-validate
-#    - Generate rollback
+#    - Post-validate results
+#    - Generate rollback scripts
 ```
 
 ### Bulk Field Addition
-```bash
-/task screen-designer "Add fields to Invoice: CustomerType (dropdown), Priority (int), Region (varchar), Notes (text)"
+```
+Ask Claude: "Add fields to Invoice: CustomerType (dropdown), Priority (int), Region (varchar), Notes (text)"
 ```
 
 ### Configuration Audit
-```bash
-/task validator "Perform complete audit of all custom fields and UDIC entities"
+```
+Ask Claude: "Perform complete audit of all custom fields and UDIC entities"
 ```
 
 ## Support
