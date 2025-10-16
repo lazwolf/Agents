@@ -15,45 +15,5 @@
     "sql",
     "screen-designer",
     "automation"
-  ],
-  "agents": [
-    {
-      "name": "screen-designer",
-      "description": "Generates SQL scripts for Vantagepoint UI configuration",
-      "capabilities": [
-        "Custom field creation",
-        "UDIC entity management",
-        "Screen layout modifications",
-        "TabID validation",
-        "SEField entry management"
-      ]
-    },
-    {
-      "name": "rollback",
-      "description": "Generates safe rollback scripts for UI changes",
-      "capabilities": [
-        "Undo field additions",
-        "Remove UDIC entities",
-        "Revert screen configurations"
-      ]
-    },
-    {
-      "name": "validator",
-      "description": "Validates Vantagepoint UI configurations",
-      "capabilities": [
-        "Configuration verification",
-        "Missing component identification",
-        "Access permission validation"
-      ]
-    },
-    {
-      "name": "workflow-coordinator",
-      "description": "Orchestrates multi-step UI configuration workflows",
-      "capabilities": [
-        "Workflow sequencing",
-        "Agent coordination",
-        "Safe operation management"
-      ]
-    }
   ]
 }
