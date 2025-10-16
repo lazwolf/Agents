@@ -15,7 +15,13 @@
         "name": "Vantagepoint Developer",
         "email": "developer@vantagepoint.com"
       },
-      "source": "./vantagepoint-tools"
+      "source": "./vantagepoint-tools",
+      "agents": [
+        "./agents/screen-designer.md",
+        "./agents/rollback.md",
+        "./agents/validator.md",
+        "./agents/workflow-coordinator.md"
+      ]
     }
   ]
 }
