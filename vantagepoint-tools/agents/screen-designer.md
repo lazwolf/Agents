@@ -1,5 +1,5 @@
 ---
-name: vantagepoint-screen-designer
+name: screen-designer
 description: Generates SQL scripts for Vantagepoint UI configuration. Use when adding custom fields, creating UDIC entities, adding dividers, or modifying screen layouts in Vantagepoint. Expert in avoiding common pitfalls like TabID mismatches and missing SEField entries.
 tools: mcp__MSSQL__describe_table, mcp__MSSQL__read_data, mcp__MSSQL__list_table, mcp__MSSQL__insert_data, mcp__MSSQL__update_data, mcp__MSSQL__create_table, mcp__MSSQL__create_index, mcp__MSSQL__drop_table, Read, Write, Grep, Glob
 model: inherit

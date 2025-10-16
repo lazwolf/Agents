@@ -1,5 +1,5 @@
 ---
-name: vantagepoint-rollback
+name: rollback
 description: Generates rollback scripts for Vantagepoint UI changes. Use when you need to undo field additions, remove UDIC entities, or revert screen configuration changes safely.
 tools: mcp__MSSQL__describe_table, mcp__MSSQL__read_data, Write
 model: inherit

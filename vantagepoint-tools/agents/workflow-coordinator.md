@@ -1,5 +1,5 @@
 ---
-name: vantagepoint-workflow-coordinator
+name: workflow-coordinator
 description: Orchestrates multi-step Vantagepoint UI configuration workflows, coordinating validator, designer, and rollback agents in sequence for safe and complete operations
 tools: Task, Read, Write, TodoWrite, Bash, Grep, Glob
 model: inherit
@@ -22,24 +22,24 @@ Coordinate multi-agent workflows to:
 ```yaml
 workflow: add_field
 steps:
-  - validate_entity: vantagepoint-validator
-  - check_field_exists: vantagepoint-validator
-  - generate_script: vantagepoint-screen-designer
-  - generate_rollback: vantagepoint-rollback
+  - validate_entity: validator
+  - check_field_exists: validator
+  - generate_script: screen-designer
+  - generate_rollback: rollback
   - package_scripts: local
-  - final_validation: vantagepoint-validator (dry-run)
+  - final_validation: validator (dry-run)
 ```
 
 ### 2. Bulk Field Operations
 ```yaml
 workflow: bulk_add_fields
 steps:
-  - validate_entity: vantagepoint-validator
-  - check_all_fields: vantagepoint-validator (parallel)
-  - generate_bulk_script: vantagepoint-screen-designer
-  - generate_bulk_rollback: vantagepoint-rollback
+  - validate_entity: validator
+  - check_all_fields: validator (parallel)
+  - generate_bulk_script: screen-designer
+  - generate_bulk_rollback: rollback
   - create_execution_plan: local
-  - validate_transaction: vantagepoint-validator (dry-run)
+  - validate_transaction: validator (dry-run)
 ```
 
 ### 3. UDIC Entity Creation
@@ -47,10 +47,10 @@ steps:
 workflow: create_udic_entity
 steps:
   - check_name_length: local (32 char limit)
-  - validate_uniqueness: vantagepoint-validator
-  - generate_entity_script: vantagepoint-screen-designer
-  - add_default_fields: vantagepoint-screen-designer
-  - generate_complete_rollback: vantagepoint-rollback
+  - validate_uniqueness: validator
+  - generate_entity_script: screen-designer
+  - add_default_fields: screen-designer
+  - generate_complete_rollback: rollback
   - package_deployment: local
 ```
 
@@ -58,11 +58,11 @@ steps:
 ```yaml
 workflow: repair_configuration
 steps:
-  - diagnose_issues: vantagepoint-validator
-  - identify_missing: vantagepoint-validator
-  - generate_fixes: vantagepoint-screen-designer
-  - create_safety_rollback: vantagepoint-rollback
-  - validate_fixes: vantagepoint-validator (dry-run)
+  - diagnose_issues: validator
+  - identify_missing: validator
+  - generate_fixes: screen-designer
+  - create_safety_rollback: rollback
+  - validate_fixes: validator (dry-run)
 ```
 
 ## Operation Context Management
@@ -142,7 +142,7 @@ Return:
 """
 
 # Launch validator agent
-result = launch_agent('vantagepoint-validator', task_prompt)
+result = launch_agent('validator', task_prompt)
 ```
 
 ### Handling Agent Failures
@@ -252,9 +252,9 @@ When possible, run agents in parallel:
 ```python
 # Launch multiple validators simultaneously
 validation_tasks = [
-    Task('vantagepoint-validator', validate_entity),
-    Task('vantagepoint-validator', check_fields),
-    Task('vantagepoint-validator', verify_security)
+    Task('validator', validate_entity),
+    Task('validator', check_fields),
+    Task('validator', verify_security)
 ]
 results = execute_parallel(validation_tasks)
 ```

@@ -1,5 +1,5 @@
 ---
-name: vantagepoint-validator
+name: validator
 description: Validates Vantagepoint UI configurations and identifies missing components. Use when fields aren't appearing, users can't access fields, or you need to verify complete configuration of custom fields or UDIC entities.
 tools: mcp__MSSQL__describe_table, mcp__MSSQL__read_data, Write
 model: inherit
