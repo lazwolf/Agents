@@ -2,12 +2,12 @@
   "name": "vantagepoint-tools",
   "description": "Comprehensive toolkit for Vantagepoint UI configuration, database management, and workflow automation",
   "version": "1.0.0",
-  "author": "Vantagepoint Developer",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/vantagepoint-marketplace"
+  "author": {
+    "name": "Vantagepoint Developer",
+    "email": "developer@vantagepoint.com"
   },
+  "license": "MIT",
+  "repository": "https://github.com/lazwolf/Agents",
   "keywords": [
     "vantagepoint",
     "ui-configuration",
@@ -16,8 +16,9 @@
     "screen-designer",
     "automation"
   ],
-  "agents": {
-    "screen-designer": {
+  "agents": [
+    {
+      "name": "screen-designer",
       "description": "Generates SQL scripts for Vantagepoint UI configuration",
       "capabilities": [
         "Custom field creation",
@@ -27,7 +28,8 @@
         "SEField entry management"
       ]
     },
-    "rollback": {
+    {
+      "name": "rollback",
       "description": "Generates safe rollback scripts for UI changes",
       "capabilities": [
         "Undo field additions",
@@ -35,7 +37,8 @@
         "Revert screen configurations"
       ]
     },
-    "validator": {
+    {
+      "name": "validator",
       "description": "Validates Vantagepoint UI configurations",
       "capabilities": [
         "Configuration verification",
@@ -43,7 +46,8 @@
         "Access permission validation"
       ]
     },
-    "workflow-coordinator": {
+    {
+      "name": "workflow-coordinator",
       "description": "Orchestrates multi-step UI configuration workflows",
       "capabilities": [
         "Workflow sequencing",
@@ -51,5 +55,5 @@
         "Safe operation management"
       ]
     }
-  }
+  ]
 }
